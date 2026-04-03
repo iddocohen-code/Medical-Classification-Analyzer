@@ -32,6 +32,45 @@ class DiseaseAnalyzer:
         """
         self.df['target'] = (self.df['target'] > 0).astype(int)
 
+    def _split_data(self):
+        """
+        Randomly splits the dataset into training (70%) and testing (30%) sets.
+        """
+        # Split the DataFrame into two subsets
+        # test_size=0.3 ensures that 30% of the data goes to the test set
+        # random_state=42 is used to ensure the split is reproducible
+        train_df, test_df = train_test_split(self.df, test_size=0.3, random_state=42)
+    
+        return train_df, test_df
+   
+    def _train_rf_model(self):
+        """
+        Trains the random forest model
+        """
+        # Separate the features (X) and the labels (y) for the training set
+        # The 'target' column is excluded from the features
+        X_train = self.train_df.drop('target', axis=1)
+        y_train = self.train_df['target']
+    
+        # Initialize the Random Forest Classifier
+        # Using default hyperparameters and a fixed random_state for reproducibility
+        self.rf_model = RandomForestClassifier(random_state=42)
+    
+        # Train the model on the training set
+        self.rf_model.fit(X_train, y_train)
+
+    def _predict_probabilities(self):
+        """
+        Predicts CAD probabilities for the test set.
+        """
+        # Prepare the feature matrix for the test set (exclude the label)
+        X_test = self.test_df.drop('target', axis=1)
+        
+        # Predict the probability of having CAD (target=1) for the test set samples
+        # predict_proba returns a 2D array where index 0 is prob(0) and index 1 is prob(1)
+        probabilities = self.rf_model.predict_proba(X_test)[:, 1]
+        return list(probabilities)
+
     def plot_pca(self):
         """
         Performs PCA and visualizes the dataset in 2D.
@@ -82,45 +121,6 @@ class DiseaseAnalyzer:
 
         plt.tight_layout(pad=3.0) 
         plt.show()
-    
-    def _split_data(self):
-        """
-        Randomly splits the dataset into training (70%) and testing (30%) sets.
-        """
-        # Split the DataFrame into two subsets
-        # test_size=0.3 ensures that 30% of the data goes to the test set
-        # random_state=42 is used to ensure the split is reproducible
-        train_df, test_df = train_test_split(self.df, test_size=0.3, random_state=42)
-    
-        return train_df, test_df
-   
-    def _train_rf_model(self):
-        """
-        Trains the random forest model
-        """
-        # Separate the features (X) and the labels (y) for the training set
-        # The 'target' column is excluded from the features
-        X_train = self.train_df.drop('target', axis=1)
-        y_train = self.train_df['target']
-    
-        # Initialize the Random Forest Classifier
-        # Using default hyperparameters and a fixed random_state for reproducibility
-        self.rf_model = RandomForestClassifier(random_state=42)
-    
-        # Train the model on the training set
-        self.rf_model.fit(X_train, y_train)
-
-    def _predict_probabilities(self):
-        """
-        Predicts CAD probabilities for the test set.
-        """
-        # Prepare the feature matrix for the test set (exclude the label)
-        X_test = self.test_df.drop('target', axis=1)
-        
-        # Predict the probability of having CAD (target=1) for the test set samples
-        # predict_proba returns a 2D array where index 0 is prob(0) and index 1 is prob(1)
-        probabilities = self.rf_model.predict_proba(X_test)[:, 1]
-        return list(probabilities)
     
     
 
