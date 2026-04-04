@@ -195,7 +195,8 @@ class DiseaseAnalyzer:
 
 
 # --- Example Usage ---
-#analyzer = CADAnalyzer("/Users/iddocohen/Documents/2025:6 A/laboratory for bioinformatics tools/ex5/CAD.csv")
+#analyzer = DiseaseAnalyzer("put your CSV file here....")
+#analyzer = DiseaseAnalyzer("/Users/iddocohen/Desktop/Medical-Classification-Analyzer/CAD.csv")
 #analyzer.plot_pca()
 #analyzer.plot_histograms(layout='dodge')
 #analyzer.plot_roc()
